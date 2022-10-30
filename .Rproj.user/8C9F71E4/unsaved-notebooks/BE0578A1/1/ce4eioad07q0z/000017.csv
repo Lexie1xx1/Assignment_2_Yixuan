@@ -1,0 +1,2 @@
+"0","# Lets make a funnel plot to visualize the data in relation to the precision,"
+"0","metafor::funnel(x = full$lnRR, vi = full$V_lnRR, yaxis = ""seinv"",xlim=c(-15,15),ylim=c(1,10),level = c(0.1, 0.05, 0.01), shade = c(""white"", ""gray55"", ""gray 75""),las = 1, xlab = ""log response ratio (lnRR)"", legend = TRUE,col=""dark blue"")"

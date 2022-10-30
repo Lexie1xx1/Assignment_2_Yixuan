@@ -36,7 +36,6 @@ Summary statistics (mean, SD, N) were generated for the average activity of each
 
 ```{r}
 ## Calculate and exclude erroneous data
-
 summary_data <-OA %>% group_by(species, treatment) %>%
               summarise(mean = mean(activity, na.rm = TRUE),
                         sd = sd(activity, na.rm = TRUE),
@@ -108,17 +107,80 @@ full <-  lnRR_data %>% mutate(residual = 1:n())
 ### Q5: Multi-level meta-analytic model.
 
 ```{r}
-MLMA <- metafor::rma.mv(yi=lnRR,V=V_lnRR, random = list(~1|Study, ~1|residual), method = "REML", test = "t", dfs = "contain", data=full)
+MLMA <- metafor::rma.mv(lnRR~1,V=V_lnRR, random = list(~1|Study, ~1|residual), method = "REML", test = "t", dfs = "contain", data=full)
 MLMA
 ```
 
 ### Q6
 
+(1) 
+
 ```{r}
 predict(MLMA, transf = "transf.ztor")
 ```
 
-(1) In 95% of cases, we expect the true mean, -0.1273, to fall between the lnRR values of -0.3539 and 0.0993, and we see that this is the case. In other words, if we were to repeat the experiment multiple times, 95% of the constructed confidence intervals would contain the true meta-analysis mean.
+In 95% of cases, we expect the true mean, -0.1273, to fall between the lnRR values of -0.3539 and 0.0993, and we see that this is the case. In other words, if we were to repeat the experiment multiple times, 95% of the constructed confidence intervals would contain the true meta-analysis mean.
+
+(2)
+
+```{r}
+## Calculate I2
+i2_vals <- orchaRd::i2_ml(MLMA)
+
+## Collate different I2 values
+i2 <- tibble(type = firstup(gsub("I2_", "", names(i2_vals))), I2 = i2_vals)
+
+## Now let's make a neat table
+flextable(i2) %>%
+    align(part = "header", align = "center") %>%
+    compose(part = "header", j = 1, value = as_paragraph(as_b("Type"))) %>%
+    compose(part = "header", j = 2, value = as_paragraph(as_b("I"), as_b(as_sup("2")),
+        as_b("(%)")))
+```
+
+(3)
+
+```{r}
+# Make an orchard plot using the model object
+orchaRd::orchard_plot(MLMA, mod = "1", group = "Study", data = full,
+    xlab = "log response ratio (lnRR)", angle = 45)
+```
+### Q7
+
+```{r}
+# Lets make a funnel plot to visualize the data in relation to the precision
+metafor::funnel(x = full$lnRR, vi = full$V_lnRR, yaxis = "seinv",xlim=c(-15,15),ylim=c(1,10),level = c(0.1, 0.05, 0.01), shade = c("white", "gray55", "gray 75"),las = 1, xlab = "log response ratio (lnRR)", legend = TRUE,col="dark blue")
+```
+
+### Q8
+
+Plot Time-lag plot.
+```{r}
+ggplot(full, aes(y = lnRR, x = Year..online., size = 1/sqrt(V_lnRR))) + geom_point(alpha = 0.3) +
+    geom_smooth(method = lm, col = "red", show.legend = FALSE) + labs(x = "Publication Year",
+    y = "log response ratio (lnRR)", size = "Precision (1/SE)") +
+    theme_classic()
+```
+
+### Q9
+
+Test for time-lag bias.
+
+```{r}
+meta_time <- rma.mv(lnRR ~ Year..online., V = V_lnRR, random = list(~1 | Study, ~1 | residual),
+    test = "t", dfs = "contain", data = full)
+summary(meta_time)
+```
+
+```{r}
+r2_time <- orchaRd::r2_ml(meta_time)
+r2_time
+```
+
+### Q10
+
+```{r}
+
 
 
 
