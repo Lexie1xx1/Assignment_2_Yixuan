@@ -18,9 +18,10 @@ library(tidyverse)
 library(pacman)
 library(metafor)
 library(orchaRd)
+library(flextable)
 ```
 
-## Data reading and composition
+## Statistical Analysis and Interpretation
 
 Read the data and rename them.
 
@@ -28,6 +29,8 @@ Read the data and rename them.
 OA <- read_csv("./data/OA_activitydat_20190302_BIOL3207.csv")
 clark <- read_csv("./data/clark_paper_data.csv")
 ```
+
+### Q1
 
 Summary statistics (mean, SD, N) were generated for the average activity of each fish species under each treatment.
 
@@ -39,11 +42,15 @@ summary_data <-OA %>% group_by(species, treatment) %>%
                         sd = sd(activity, na.rm = TRUE),
                         n = length(unique(animal_id))) %>%
               rename(Species = "species")
+```
 
-## Combine the data
+### Q2: Combine the data
 
+```{r}
 total_data <- cbind(clark, summary_data)
 ```
+
+### Q3
 
 ```{r}
 final <- pivot_wider(total_data, names_from = treatment,
@@ -77,13 +84,15 @@ colnames(ocean) == colnames(final_1)
 full_data <- rbind(ocean, final_1)
 ```
 
-Delete the NA values
+Delete the NA values.
 
 ```{r}
 missing <- sum(is.na(full_data))
 missing
 full_1 <- full_data[complete.cases(full_data),]
 ```
+
+### Q4: Calculate the log response ratio (lnRR) effect size
 
 ```{r}
 # Calculate the effect size, ROM
@@ -96,9 +105,21 @@ Increase a row of observations.
 full <-  lnRR_data %>% mutate(residual = 1:n())
 ```
 
+### Q5: Multi-level meta-analytic model.
+
 ```{r}
 MLMA <- metafor::rma.mv(yi=lnRR,V=V_lnRR, random = list(~1|Study, ~1|residual), method = "REML", test = "t", dfs = "contain", data=full)
 MLMA
 ```
+
+### Q6
+
+```{r}
+predict(MLMA, transf = "transf.ztor")
+```
+
+(1) In 95% of cases, we expect the true mean, -0.1273, to fall between the lnRR values of -0.3539 and 0.0993, and we see that this is the case. In other words, if we were to repeat the experiment multiple times, 95% of the constructed confidence intervals would contain the true meta-analysis mean.
+
+
 
 

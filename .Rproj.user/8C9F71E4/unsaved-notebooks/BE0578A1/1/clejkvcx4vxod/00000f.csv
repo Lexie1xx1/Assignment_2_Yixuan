@@ -1,7 +1,0 @@
-"0","missing <- sum(is.na(full_data))"
-"0","missing"
-"1","[1]"
-"1"," 6"
-"1","
-"
-"0","full <- full_data[complete.cases(full_data),]"

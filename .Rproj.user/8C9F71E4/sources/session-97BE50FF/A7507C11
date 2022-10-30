@@ -1,0 +1,28 @@
+{
+    "id": "A7507C11",
+    "path": null,
+    "project_path": null,
+    "type": "object_explorer",
+    "hash": "0",
+    "contents": "",
+    "dirty": false,
+    "created": 1667107495168.0,
+    "source_on_save": false,
+    "relative_order": 8,
+    "properties": {
+        "id": "2737a64e73d0492f83e7fbb6d2343141",
+        "name": "MLMA",
+        "title": "MLMA",
+        "language": "R",
+        "source_window_id": "",
+        "Source": "Source"
+    },
+    "folds": "",
+    "lastKnownWriteTime": 13511095239180380,
+    "encoding": "",
+    "collab_server": "",
+    "source_window": "",
+    "last_content_update": 1667107495168,
+    "read_only": false,
+    "read_only_alternatives": []
+}
