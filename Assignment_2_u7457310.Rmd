@@ -180,9 +180,6 @@ r2_time
 ### Q10
 
 ```{r}
-rma.mv(lnRR ~ (1 / V_lnRR), V = V_lnRR, random = list(~1 | Study, ~1 | residual), test = "t", dfs = "contain", data = full)
-```
-
 
 
 
