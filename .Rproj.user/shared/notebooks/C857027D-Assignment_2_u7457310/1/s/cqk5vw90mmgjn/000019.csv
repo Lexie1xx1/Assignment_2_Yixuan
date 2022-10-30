@@ -1,4 +1,4 @@
 "0","ggplot(full, aes(y = lnRR, x = Year..online., size = 1/sqrt(V_lnRR))) + geom_point(alpha = 0.3) +"
 "0","    geom_smooth(method = lm, col = ""red"", show.legend = FALSE) + labs(x = ""Publication Year"","
 "0","    y = ""log response ratio (lnRR)"", size = ""Precision (1/SE)"") +"
-"0","    theme_classic()"
+"0","    theme_classic()+ labs(title = ""Time-lag plot"")"

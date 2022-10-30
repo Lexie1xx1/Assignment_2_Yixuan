@@ -21,8 +21,6 @@ library(orchaRd)
 library(flextable)
 ```
 
-## Statistical Analysis and Interpretation
-
 Read the data and rename them.
 
 ```{r}
@@ -148,7 +146,7 @@ flextable(i2) %>%
 ```{r}
 # Make an orchard plot using the model object
 orchaRd::orchard_plot(MLMA, mod = "1", group = "Study", data = full,
-    xlab = "log response ratio (lnRR)", angle = 45)
+    xlab = "log response ratio (lnRR)", angle = 45)+ labs(title = "Orchard plot")
 ```
 ### Q7: Funnel plot for visually assessing the possibility of publication bias.
 
@@ -164,7 +162,7 @@ Plot Time-lag plot.
 ggplot(full, aes(y = lnRR, x = Year..online., size = 1/sqrt(V_lnRR))) + geom_point(alpha = 0.3) +
     geom_smooth(method = lm, col = "red", show.legend = FALSE) + labs(x = "Publication Year",
     y = "log response ratio (lnRR)", size = "Precision (1/SE)") +
-    theme_classic()
+    theme_classic()+ labs(title = "Time-lag plot")
 ```
 
 From the Time-lag plot, it can be seen that the difference between the mean values of the experimental group and the control group (lnRR) has a significant positive correlation with the publication year. Therefore, the effect size showed an upward trend over time.
