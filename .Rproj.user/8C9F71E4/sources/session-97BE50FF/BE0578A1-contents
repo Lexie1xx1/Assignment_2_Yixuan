@@ -1,0 +1,72 @@
+---
+title: "Assignment_2"
+author: "Yixuan Li_u7457310"
+date: "2022-10-30"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+Here are the packages required for this assignment:
+
+```{r}
+library(tidyverse)
+library(pacman)
+```
+
+## Data reading and composition
+
+Read the data and rename them.
+
+```{r}
+OA <- read_csv("./data/OA_activitydat_20190302_BIOL3207.csv")
+clark <- read_csv("./data/clark_paper_data.csv")
+```
+
+Summary statistics (mean, SD, N) were generated for the average activity of each fish species under each treatment.
+
+```{r}
+summary_data <-OA %>% group_by(species, treatment) %>%
+              summarise(mean = mean(activity, na.rm = TRUE),
+                        sd = sd(activity, na.rm = TRUE),
+                        n = length(unique(animal_id))) %>%
+              rename(Species = "species")
+
+## Combine the data.
+
+total_data <- cbind(clark, summary_data)
+```
+
+```{r}
+final <- pivot_wider(total_data, names_from = treatment,
+                     names_glue = "{treatment}_{.value}",
+                     values_from = c("mean", "sd", "n"))
+
+ocean <- read_csv("./data/ocean_meta_data.csv")
+
+## Displays column and column information for the data.
+
+dim(ocean)
+dim(final)
+```
+
+```{r}
+## Do some renaming of colnames so they match ocean
+final_1 <- final %>% rename("oa.mean" = CO2_mean,
+                            "oa.sd" = CO2_sd,
+                            "oa.n" = CO2_n,
+                            "ctrl.mean" = control_mean,
+                            "ctrl.sd" = control_sd,
+                            "ctrl.n" = control_n)
+
+# Reorder col names based on names in ocean
+final_1 <- final_1[names(ocean)]
+
+# Check columns are in same order
+colnames(ocean) == colnames(final_1)
+
+# Combine the data
+full_data <- rbind(ocean, final_1)
+```
