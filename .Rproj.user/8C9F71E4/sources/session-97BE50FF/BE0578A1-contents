@@ -30,7 +30,7 @@ OA <- read_csv("./data/OA_activitydat_20190302_BIOL3207.csv")
 clark <- read_csv("./data/clark_paper_data.csv")
 ```
 
-### Q1
+### Q1: Correct analysis of Clark et al. (2020) data (i.e., OA_activitydat_20190302_BIOL3207.csv) to generate the summary statistics (means, SD, N) for each of the fish species’ average activity for each treatment.
 
 Summary statistics (mean, SD, N) were generated for the average activity of each fish species under each treatment.
 
@@ -43,23 +43,24 @@ summary_data <-OA %>% group_by(species, treatment) %>%
               rename(Species = "species")
 ```
 
-### Q2: Combine the data
+### Q2: Through coding, merge the summary statistics generated from 1) with the metadata (i.e., clark_paper_data.csv) from Clark et al. (2020).
 
 ```{r}
+## Combine the data
 total_data <- cbind(clark, summary_data)
 ```
 
-### Q3
+### Q3: Through coding, correctly merge the combined summary statistics and metadata from Clark et al. (2020) (output from 1 & 2) into the larger meta-analysis dataset (i.e., ocean_meta_data.csv).
 
 ```{r}
+## Expand the data
 final <- pivot_wider(total_data, names_from = treatment,
                      names_glue = "{treatment}_{.value}",
                      values_from = c("mean", "sd", "n"))
 
 ocean <- read_csv("./data/ocean_meta_data.csv")
 
-## Displays column and column information for the data
-
+## Displays the number of row and column of the data
 dim(ocean)
 dim(final)
 ```
@@ -91,10 +92,10 @@ missing
 full_1 <- full_data[complete.cases(full_data),]
 ```
 
-### Q4: Calculate the log response ratio (lnRR) effect size
+### Q4: Correctly calculate the log response ratio (lnRR) effect size for every row of the dataframe using metafor’s escalc() function.
 
 ```{r}
-# Calculate the effect size, ROM
+## Calculate the log response ratio (lnRR) effect size
 lnRR_data <- metafor::escalc(measure = "ROM", m1i = ctrl.mean, m2i = oa.mean, sd1i = ctrl.sd, sd2i =  oa.sd, n1i = ctrl.n, n2i = oa.n, data = full_1, var.names = c("lnRR", "V_lnRR"))
 ```
 
@@ -104,24 +105,28 @@ Increase a row of observations.
 full <-  lnRR_data %>% mutate(residual = 1:n())
 ```
 
-### Q5: Multi-level meta-analytic model.
+### Q5: Correct meta-analytic model fitted to the data that controls for the sampling variance of lnRR. The model should include a random effect of study and observation. Use metafor’s rma.mv() function.
 
 ```{r}
+## Multi-level meta-analytic model
 MLMA <- metafor::rma.mv(lnRR~1,V=V_lnRR, random = list(~1|Study, ~1|residual), method = "REML", test = "t", dfs = "contain", data=full)
 MLMA
 ```
 
-### Q6
+It can be seen that the p-value is 0.2673, which is a large number, so there is no significant difference between the mean values of the control group and the experimental group in each study.
 
-(1) 
+### Q6: Written paragraph of the findings and what they mean which is supported with a figure. The paragraph should include:
+
+(1) Correct presentation and interpretation of overall meta-analytic mean and measures of uncertainty around the mean estimate (e.g., 95% confidence intervals).
 
 ```{r}
+## Convert the overall meta-analytic mean back to the correlation coefficient
 predict(MLMA, transf = "transf.ztor")
 ```
 
-In 95% of cases, we expect the true mean, -0.1273, to fall between the lnRR values of -0.3539 and 0.0993, and we see that this is the case. In other words, if we were to repeat the experiment multiple times, 95% of the constructed confidence intervals would contain the true meta-analysis mean.
+In 95% of cases, we expect the true mean, -0.1273, to fall between the lnRR values of -0.3539 and 0.0993, and we see that this is the case. In other words, if we were to repeat the experiment multiple times, 95% of the constructed confidence intervals would contain the true meta-analysis mean. The mean value of the overall meta-analysis was within 95% confidence intervals, indicating that fish activity was similar across studies.
 
-(2)
+(2) Measures of heterogeneity in effect size estimates across studies (i.e., I2 and/or prediction intervals - see predict() function in metafor).
 
 ```{r}
 ## Calculate I2
@@ -138,21 +143,21 @@ flextable(i2) %>%
         as_b("(%)")))
 ```
 
-(3)
+ (3) Forest plot showing the mean estimate, 95% confidence interval, and prediction interval with clearly labelled axes, number of samples and studies plotted on figure.
 
 ```{r}
 # Make an orchard plot using the model object
 orchaRd::orchard_plot(MLMA, mod = "1", group = "Study", data = full,
     xlab = "log response ratio (lnRR)", angle = 45)
 ```
-### Q7
+### Q7: Funnel plot for visually assessing the possibility of publication bias.
 
 ```{r}
 # Lets make a funnel plot to visualize the data in relation to the precision
-metafor::funnel(x = full$lnRR, vi = full$V_lnRR, yaxis = "seinv",xlim=c(-15,15),ylim=c(1,10),level = c(0.1, 0.05, 0.01), shade = c("white", "gray55", "gray 75"),las = 1, xlab = "log response ratio (lnRR)", legend = TRUE,col="dark blue")
+metafor::funnel(x = full$lnRR, vi = full$V_lnRR, yaxis = "seinv",xlim=c(-7,7),ylim=c(1,10),level = c(0.1, 0.05, 0.01), shade = c("white", "gray25", "gray 65","gray 95"),las = 1, xlab = "log response ratio (lnRR)", legend = TRUE,col="dark blue")
 ```
 
-### Q8
+### Q8: Time-lag plot assessing how effect sizes may or may not have changed through time.
 
 Plot Time-lag plot.
 ```{r}
@@ -162,7 +167,9 @@ ggplot(full, aes(y = lnRR, x = Year..online., size = 1/sqrt(V_lnRR))) + geom_poi
     theme_classic()
 ```
 
-### Q9
+From the Time-lag plot, it can be seen that the difference between the mean values of the experimental group and the control group (lnRR) has a significant positive correlation with the publication year. Therefore, the effect size showed an upward trend over time.
+
+### Q9: Formal meta-regression model that includes year as a moderator (fixed effect) to test for time-lag bias.
 
 Test for time-lag bias.
 
@@ -177,11 +184,19 @@ r2_time <- orchaRd::r2_ml(meta_time)
 r2_time
 ```
 
-### Q10
+### Q10: Formal meta-regression model that includes inverse sampling variance to test for file-drawer biases.
 
 ```{r}
 rma.mv(lnRR ~ (1 / V_lnRR), V = V_lnRR, random = list(~1 | Study, ~1 | residual), test = "t", dfs = "contain", data = full)
 ```
+
+### Q11: A written paragraph that discusses the potential for publication bias based on the meta-regression results. What type of publication bias, if any, appears to be present in the data? If publication bias is present, what does it mean and what might be contributing to such bias?
+
+According to the funnel plot we drew, we can see that the symmetry of our funnel plot is not very good, but the asymmetry is not necessarily caused by publication bias, but may also be caused by heterogeneity and other factors. For example, the heterogeneity value we obtained is 100%, which is a very large value. However, we can see that the funnel plot shows a very large number of missing effect sizes, which fall in non-significant regions (p&gt; 0.1), so publication bias can be considered. Some articles with small sample sizes, low accuracy and no significant correlation will not be published. Therefore, it can be shown that there is a certain degree of publication bias in this meta-analysis.
+
+### Q12: Identify any studies contributing to publication bias. How do your updated meta-analysis results compare with a meta-analysis by Clement et. al. (2022)? Are there any concerns about these studies? If so, describe using references to existing papers what concerns have been raised?
+
+
 
 
 

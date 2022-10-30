@@ -1,3 +1,4 @@
+"0","## Multi-level meta-analytic model"
 "0","MLMA <- metafor::rma.mv(lnRR~1,V=V_lnRR, random = list(~1|Study, ~1|residual), method = ""REML"", test = ""t"", dfs = ""contain"", data=full)"
 "2","Warning: Rows with NAs omitted from model fitting."
 "2","Warning: Ratio of largest to smallest sampling variance extremely large. May not be able to obtain stable results."

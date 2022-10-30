@@ -1,2 +1,4 @@
+"0","## Convert the overall meta-analytic mean back to the correlation coefficient"
+"0","predict(MLMA, transf = ""transf.ztor"")"
 "1","
 "

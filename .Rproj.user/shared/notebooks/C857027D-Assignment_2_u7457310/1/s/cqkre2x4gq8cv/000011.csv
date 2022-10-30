@@ -1,7 +1,7 @@
 "0","OA <- read_csv(""./data/OA_activitydat_20190302_BIOL3207.csv"")"
 "2","New names:"
 "2","[1mRows: [22m[34m589[39m [1mColumns: [22m[34m9[39m"
-"2","[36m──[39m [1mColumn specification[22m [36m──────────────────────────────────────────────────────────────[39m
+"2","[36m──[39m [1mColumn specification[22m [36m─────────────────────────────────────────────────────────────[39m
 [1mDelimiter:[22m "",""
 [31mchr[39m (5): loc, species, treatment, size, comment
 [32mdbl[39m (4): ...1, animal_id, sl, activity"
@@ -10,9 +10,9 @@
 [36mℹ[39m Specify the column types or set `show_col_types = FALSE` to quiet this message."
 "0","clark <- read_csv(""./data/clark_paper_data.csv"")"
 "2","[1mRows: [22m[34m1[39m [1mColumns: [22m[34m15[39m"
-"2","[36m──[39m [1mColumn specification[22m [36m──────────────────────────────────────────────────────────────[39m
+"2","[36m──[39m [1mColumn specification[22m [36m─────────────────────────────────────────────────────────────[39m
 [1mDelimiter:[22m "",""
-[31mchr[39m (9): Study, Authors, Title, Journal, Effect type, Climate (FishBase), Env cue/...
+[31mchr[39m (9): Study, Authors, Title, Journal, Effect type, Climate (FishBase), Env cue...
 [32mdbl[39m (5): Year (online), Year (print), Pub year IF, 2017 IF, Average n
 [33mlgl[39m (1): Cue/stimulus type"
 "2","

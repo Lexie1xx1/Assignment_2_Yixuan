@@ -1,0 +1,3 @@
+"0","## Calculate the log response ratio (lnRR) effect size"
+"0","lnRR_data <- metafor::escalc(measure = ""ROM"", m1i = ctrl.mean, m2i = oa.mean, sd1i = ctrl.sd, sd2i =  oa.sd, n1i = ctrl.n, n2i = oa.n, data = full_1, var.names = c(""lnRR"", ""V_lnRR""))"
+"2","Warning: NaNs produced"

@@ -3,22 +3,3 @@
 "0","library(metafor)"
 "0","library(orchaRd)"
 "0","library(flextable)"
-"2","Registered S3 method overwritten by 'data.table':
-  method           from
-  print.data.table     
-"
-"2","Registered S3 methods overwritten by 'htmltools':
-  method               from         
-  print.html           tools:rstudio
-  print.shiny.tag      tools:rstudio
-  print.shiny.tag.list tools:rstudio
-"
-"2","
-载入程辑包：‘flextable’
-
-"
-"2","The following object is masked from ‘package:purrr’:
-
-    compose
-
-"
