@@ -9,11 +9,15 @@ output: html_document
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
+Github website.https://github.com/Lexie1xx1/Assignment_2_Yixuan.git
+
 Here are the packages required for this assignment:
 
 ```{r}
 library(tidyverse)
 library(pacman)
+library(metafor)
+library(orchaRd)
 ```
 
 ## Data reading and composition
@@ -28,13 +32,15 @@ clark <- read_csv("./data/clark_paper_data.csv")
 Summary statistics (mean, SD, N) were generated for the average activity of each fish species under each treatment.
 
 ```{r}
+## Calculate and exclude erroneous data
+
 summary_data <-OA %>% group_by(species, treatment) %>%
               summarise(mean = mean(activity, na.rm = TRUE),
                         sd = sd(activity, na.rm = TRUE),
                         n = length(unique(animal_id))) %>%
               rename(Species = "species")
 
-## Combine the data.
+## Combine the data
 
 total_data <- cbind(clark, summary_data)
 ```
@@ -46,7 +52,7 @@ final <- pivot_wider(total_data, names_from = treatment,
 
 ocean <- read_csv("./data/ocean_meta_data.csv")
 
-## Displays column and column information for the data.
+## Displays column and column information for the data
 
 dim(ocean)
 dim(final)
@@ -70,3 +76,29 @@ colnames(ocean) == colnames(final_1)
 # Combine the data
 full_data <- rbind(ocean, final_1)
 ```
+
+Delete the NA values
+
+```{r}
+missing <- sum(is.na(full_data))
+missing
+full_1 <- full_data[complete.cases(full_data),]
+```
+
+```{r}
+# Calculate the effect size, ROM
+lnRR_data <- metafor::escalc(measure = "ROM", m1i = ctrl.mean, m2i = oa.mean, sd1i = ctrl.sd, sd2i =  oa.sd, n1i = ctrl.n, n2i = oa.n, data = full_1, var.names = c("lnRR", "V_lnRR"))
+```
+
+Increase a row of observations.
+
+```{r}
+full <-  lnRR_data %>% mutate(residual = 1:n())
+```
+
+```{r}
+MLMA <- metafor::rma.mv(yi=lnRR,V=V_lnRR, random = list(~1|Study, ~1|residual), method = "REML", test = "t", dfs = "contain", data=full)
+MLMA
+```
+
+
